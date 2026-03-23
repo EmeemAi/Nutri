@@ -1,13 +1,446 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrición Integral | Lic. María Paz</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        html { scroll-behavior: smooth; }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .hero-gradient {
+            background: radial-gradient(circle at top right, #f0fdf4 0%, #fdfcf9 100%);
+        }
+
+        .card-shadow {
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-shadow:hover {
+            box-shadow: 0 20px 50px -10px rgba(6, 78, 59, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-[#fdfcf9] text-stone-800 antialiased">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Icons Component ---
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            useEffect(() => {
+                lucide.createIcons();
+            }, []);
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        // --- Components ---
+        const Navbar = ({ activePage, setActivePage }) => {
+            const [scrolled, setScrolled] = useState(false);
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setScrolled(window.scrollY > 20);
+                window.addEventListener("scroll", handleScroll);
+                return () => window.removeEventListener("scroll", handleScroll);
+            }, []);
+
+            const navLinks = [
+                { name: "Inicio", id: "home" },
+                { name: "Sobre Mí", id: "about" },
+                { name: "Servicios", id: "services" },
+                { name: "Testimonios", id: "testimonials" },
+                { name: "Contacto", id: "contact" },
+            ];
+
+            return (
+                <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+                    scrolled ? "glass-nav py-4 shadow-sm border-b border-stone-100" : "bg-transparent py-6"
+                }`}>
+                    <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActivePage('home')}>
+                            <div className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center">
+                                <Icon name="leaf" className="w-5 h-5 text-emerald-50" />
+                            </div>
+                            <span className="text-xl font-serif font-bold tracking-tight text-emerald-950">Nutrición Integral</span>
+                        </div>
+
+                        <div className="hidden md:flex items-center gap-10">
+                            {navLinks.map((link) => (
+                                <button
+                                    key={link.id}
+                                    onClick={() => setActivePage(link.id)}
+                                    className={`text-xs font-bold uppercase tracking-widest transition-colors ${
+                                        activePage === link.id ? "text-emerald-700" : "text-stone-500 hover:text-emerald-700"
+                                    }`}
+                                >
+                                    {link.name}
+                                </button>
+                            ))}
+                            <button 
+                                onClick={() => window.open('https://wa.me/1234567890', '_blank')}
+                                className="bg-emerald-900 text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-emerald-800 transition-all shadow-lg"
+                            >
+                                Reservar Turno
+                            </button>
+                        </div>
+
+                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-emerald-950">
+                            <Icon name={isMenuOpen ? "x" : "menu"} className="w-6 h-6" />
+                        </button>
+                    </div>
+
+                    {isMenuOpen && (
+                        <div className="md:hidden bg-white border-b border-stone-100 px-6 py-8 space-y-6 animate-fade-in">
+                            {navLinks.map((link) => (
+                                <button
+                                    key={link.id}
+                                    onClick={() => { setActivePage(link.id); setIsMenuOpen(false); }}
+                                    className="block text-2xl font-serif text-stone-800"
+                                >
+                                    {link.name}
+                                </button>
+                            ))}
+                            <button 
+                                onClick={() => window.open('https://wa.me/1234567890', '_blank')}
+                                className="w-full bg-emerald-900 text-white py-4 rounded-xl font-bold uppercase tracking-widest"
+                            >
+                                Reservar Turno
+                            </button>
+                        </div>
+                    )}
+                </nav>
+            );
+        };
+
+        const Footer = () => (
+            <footer className="bg-stone-950 text-stone-400 py-20">
+                <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12">
+                    <div className="col-span-2">
+                        <div className="flex items-center gap-2 mb-6">
+                            <Icon name="leaf" className="w-6 h-6 text-emerald-500" />
+                            <span className="text-xl font-serif font-bold text-white">Nutrición Integral</span>
+                        </div>
+                        <p className="max-w-sm text-stone-500 leading-relaxed mb-8">
+                            Acompañándote en el camino hacia una vida más plena, saludable y consciente a través de la alimentación basada en ciencia.
+                        </p>
+                        <div className="flex gap-4">
+                            <a href="#" className="w-10 h-10 rounded-full border border-stone-800 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all">
+                                <Icon name="instagram" className="w-5 h-5" />
+                            </a>
+                            <a href="#" className="w-10 h-10 rounded-full border border-stone-800 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all">
+                                <Icon name="mail" className="w-5 h-5" />
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">Contacto</h4>
+                        <ul className="space-y-4 text-sm">
+                            <li className="flex items-center gap-3"><Icon name="phone" className="w-4 h-4 text-emerald-500" /> +54 9 11 1234-5678</li>
+                            <li className="flex items-center gap-3"><Icon name="mail" className="w-4 h-4 text-emerald-500" /> hola@nutricionintegral.com</li>
+                            <li className="flex items-center gap-3"><Icon name="map-pin" className="w-4 h-4 text-emerald-500" /> Palermo, Buenos Aires</li>
+                        </ul>
+                    </div>
+                </div>
+                <div className="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-stone-900 text-center text-xs tracking-widest uppercase text-stone-600">
+                    © 2026 Nutrición Integral. Lic. María Paz.
+                </div>
+            </footer>
+        );
+
+        // --- Pages ---
+        const HomePage = ({ onNavigate }) => (
+            <div className="animate-fade-in">
+                <section className="relative min-h-screen flex items-center pt-20 overflow-hidden hero-gradient">
+                    <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+                        <div>
+                            <h2 className="text-emerald-800 font-bold uppercase tracking-[0.3em] text-xs mb-6">Bienestar & Salud</h2>
+                            <h1 className="text-6xl md:text-8xl font-serif text-stone-900 leading-[0.95] mb-8">
+                                Nutre tu <br />
+                                <span className="italic text-emerald-900">esencia.</span>
+                            </h1>
+                            <p className="text-xl text-stone-600 mb-12 max-w-md leading-relaxed font-light">
+                                Descubre un enfoque elegante y científico para transformar tu salud sin renunciar al placer de comer bien.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-6">
+                                <button 
+                                    onClick={() => onNavigate('contact')}
+                                    className="bg-emerald-900 text-white px-10 py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-emerald-800 transition-all shadow-xl"
+                                >
+                                    Comenzar ahora
+                                </button>
+                                <button 
+                                    onClick={() => onNavigate('services')}
+                                    className="group flex items-center gap-3 text-stone-900 font-bold text-sm uppercase tracking-widest"
+                                >
+                                    Ver servicios
+                                    <div className="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center group-hover:bg-stone-900 group-hover:text-white transition-all">
+                                        <Icon name="arrow-right" className="w-4 h-4" />
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        <div className="relative">
+                            <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-2xl relative z-10">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=1000" 
+                                    alt="Health" 
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-emerald-100 rounded-full blur-3xl opacity-60 -z-10"></div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section className="py-32 bg-white">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="text-center mb-24">
+                            <h2 className="text-emerald-800 font-bold uppercase tracking-[0.3em] text-xs mb-4">Filosofía</h2>
+                            <h3 className="text-4xl md:text-5xl font-serif text-stone-900">Salud sin restricciones.</h3>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-16">
+                            {[
+                                { icon: "heart", title: "Consciencia", desc: "Aprende a escuchar las señales de tu cuerpo y a nutrirlo con intención." },
+                                { icon: "zap", title: "Energía", desc: "Optimiza tu vitalidad diaria a través de nutrientes de alta calidad." },
+                                { icon: "award", title: "Ciencia", desc: "Protocolos basados en la última evidencia científica nutricional." }
+                            ].map((item, i) => (
+                                <div key={i} className="text-center group">
+                                    <div className="w-20 h-20 mx-auto bg-stone-50 rounded-full flex items-center justify-center text-emerald-900 mb-8 group-hover:bg-emerald-900 group-hover:text-white transition-all duration-500">
+                                        <Icon name={item.icon} className="w-8 h-8" />
+                                    </div>
+                                    <h4 className="text-xl font-serif mb-4">{item.title}</h4>
+                                    <p className="text-stone-500 leading-relaxed font-light">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        );
+
+        const AboutPage = () => (
+            <div className="animate-fade-in pt-40 pb-32 bg-[#fdfcf9]">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid lg:grid-cols-2 gap-20 items-center">
+                        <div className="relative">
+                            <div className="aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&q=80&w=800" 
+                                    alt="Lic. María Paz" 
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="absolute -bottom-8 -left-8 bg-emerald-900 text-white p-10 rounded-3xl shadow-xl">
+                                <p className="text-4xl font-serif mb-1">8+</p>
+                                <p className="text-xs uppercase tracking-widest opacity-70">Años de Experiencia</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h2 className="text-emerald-800 font-bold uppercase tracking-[0.3em] text-xs mb-6">Sobre Mí</h2>
+                            <h3 className="text-5xl font-serif text-stone-900 mb-8 leading-tight">Lic. María Paz</h3>
+                            <div className="space-y-6 text-lg text-stone-600 font-light leading-relaxed">
+                                <p>Mi pasión por la nutrición nació de la convicción de que lo que comemos define no solo nuestra salud física, sino nuestra claridad mental y bienestar emocional.</p>
+                                <p>Como Licenciada en Nutrición, he dedicado mi carrera a desmitificar las dietas de moda y reemplazarlas por hábitos sostenibles, elegantes y placenteros.</p>
+                                <p>Mi enfoque es holístico: considero tu estilo de vida, tus gustos y tus metas para crear un plan que se sienta como un regalo para ti mismo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const ServicesPage = () => (
+            <div className="animate-fade-in pt-40 pb-32 bg-white">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="text-center mb-24">
+                        <h2 className="text-emerald-800 font-bold uppercase tracking-[0.3em] text-xs mb-4">Propuesta</h2>
+                        <h3 className="text-5xl font-serif text-stone-900">Servicios Exclusivos</h3>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-12">
+                        {[
+                            { title: "Consultoría Premium", price: "Desde $5000", desc: "Análisis exhaustivo de composición corporal y diseño de plan 100% a medida." },
+                            { title: "Nutrición Deportiva", price: "Desde $6500", desc: "Optimización de rendimiento para atletas amateurs y profesionales." },
+                            { title: "Pack Bienestar", price: "Desde $12000", desc: "Acompañamiento intensivo de 3 meses para transformación de hábitos." },
+                            { title: "Plan Corporativo", price: "Consultar", desc: "Programas de bienestar para equipos de trabajo y empresas." }
+                        ].map((service, i) => (
+                            <div key={i} className="group bg-stone-50 p-12 rounded-[3rem] hover:bg-emerald-900 transition-all duration-700">
+                                <div className="flex justify-between items-start mb-8">
+                                    <h4 className="text-3xl font-serif text-stone-900 group-hover:text-white transition-colors">{service.title}</h4>
+                                    <span className="text-emerald-700 font-bold group-hover:text-emerald-300 transition-colors">{service.price}</span>
+                                </div>
+                                <p className="text-stone-500 mb-10 group-hover:text-emerald-100/70 transition-colors leading-relaxed">{service.desc}</p>
+                                <button className="w-full py-4 rounded-full border border-stone-200 text-stone-900 font-bold uppercase tracking-widest text-xs group-hover:bg-white group-hover:border-white transition-all">
+                                    Saber más
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+
+        const TestimonialsPage = () => (
+            <div className="animate-fade-in pt-40 pb-32 bg-[#fdfcf9]">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="text-center mb-24">
+                        <h2 className="text-emerald-800 font-bold uppercase tracking-[0.3em] text-xs mb-4">Experiencias</h2>
+                        <h3 className="text-5xl font-serif text-stone-900">Voces de Cambio</h3>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {[
+                            { name: "Julian P.", text: "El enfoque de María cambió mi vida. No solo bajé de peso, sino que recuperé mi energía." },
+                            { name: "Andrea L.", text: "Elegante, profesional y muy humana. Sus recetas son increíbles y fáciles de seguir." },
+                            { name: "Marcos G.", text: "Como deportista, necesitaba precisión. El plan fue la clave para mi último triatlón." }
+                        ].map((t, i) => (
+                            <div key={i} className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-stone-100">
+                                <div className="flex gap-1 mb-6">
+                                    {[...Array(5)].map((_, idx) => <Icon key={idx} name="star" className="w-3 h-3 text-amber-400 fill-amber-400" />)}
+                                </div>
+                                <p className="text-stone-600 italic mb-8 leading-relaxed">"{t.text}"</p>
+                                <p className="font-serif text-stone-900">{t.name}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+
+        const ContactPage = () => (
+            <div className="animate-fade-in pt-40 pb-32 bg-white">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="bg-stone-950 rounded-[4rem] overflow-hidden grid lg:grid-cols-2">
+                        <div className="p-16 lg:p-24 text-white">
+                            <h2 className="text-emerald-500 font-bold uppercase tracking-[0.3em] text-xs mb-8">Contacto</h2>
+                            <h3 className="text-5xl font-serif mb-12">Hablemos de tu futuro.</h3>
+                            <div className="space-y-10">
+                                <div className="flex items-center gap-6 group cursor-pointer" onClick={() => window.open('https://wa.me/1234567890', '_blank')}>
+                                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-emerald-500 transition-all">
+                                        <Icon name="message-circle" className="w-6 h-6 text-emerald-500 group-hover:text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="text-stone-500 text-xs uppercase tracking-widest mb-1">WhatsApp</p>
+                                        <p className="text-xl font-serif">+54 9 11 1234-5678</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-stone-900 p-16 lg:p-24">
+                            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+                                <div className="space-y-2">
+                                    <label className="text-xs uppercase tracking-widest text-stone-500 font-bold">Nombre</label>
+                                    <input type="text" className="w-full bg-transparent border-b border-stone-800 py-4 text-white focus:outline-none focus:border-emerald-500 transition-colors" />
+                                </div>
+                                <button className="w-full bg-emerald-500 text-stone-950 py-5 rounded-2xl font-bold uppercase tracking-widest hover:bg-emerald-400 transition-all mt-8">
+                                    Enviar Mensaje
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // --- Main App ---
+        function App() {
+            const [activePage, setActivePage] = useState('home');
+
+            useEffect(() => {
+                window.scrollTo(0, 0);
+            }, [activePage]);
+
+            const renderPage = () => {
+                switch(activePage) {
+                    case 'home': return <HomePage onNavigate={setActivePage} />;
+                    case 'about': return <AboutPage />;
+                    case 'services': return <ServicesPage />;
+                    case 'testimonials': return <TestimonialsPage />;
+                    case 'contact': return <ContactPage />;
+                    default: return <HomePage onNavigate={setActivePage} />;
+                }
+            };
+
+            return (
+                <div className="min-h-screen">
+                    <Navbar activePage={activePage} setActivePage={setActivePage} />
+                    <main>
+                        {renderPage()}
+                    </main>
+                    <Footer />
+                    <button 
+                        onClick={() => window.open('https://wa.me/1234567890', '_blank')}
+                        className="fixed bottom-10 right-10 z-50 w-16 h-16 bg-emerald-500 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-all"
+                    >
+                        <Icon name="message-circle" className="w-8 h-8" />
+                    </button>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
