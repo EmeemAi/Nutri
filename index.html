@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutrición Integral | Lic. María Paz</title>
+    <title>Andrés Sambrana Nutricionista</title>
     
-    <!-- Fonts -->
+    <!-- SEO & Meta -->
+    <meta name="description" content="Andrés Sambrana Nutricionista. Planes personalizados, nutrición deportiva y bienestar integral.">
+    
+    <!-- Fonts: Inter & Playfair Display -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (v3 via CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- React & Babel -->
+    <!-- React, ReactDOM & Babel for JSX -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -57,9 +60,6 @@
         .animate-fade-in {
             animation: fadeIn 0.8s ease-out forwards;
         }
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-300 { animation-delay: 0.3s; }
         
         html { scroll-behavior: smooth; }
         
@@ -75,28 +75,42 @@
 
         .card-shadow {
             box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
-        
         .card-shadow:hover {
             box-shadow: 0 20px 50px -10px rgba(6, 78, 59, 0.1);
+            transform: translateY(-5px);
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
         }
     </style>
 </head>
 <body class="bg-[#fdfcf9] text-stone-800 antialiased">
+    <!-- Pantalla de Carga (Crucial para evitar el "blanco" en móviles) -->
+    <div id="loading-screen" class="fixed inset-0 z-[100] bg-[#fdfcf9] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-12 h-12 border-4 border-emerald-200 border-t-emerald-900 rounded-full animate-spin mb-4"></div>
+        <p class="font-serif italic text-emerald-900 animate-pulse">Iniciando Andrés Sambrana Nutricionista...</p>
+    </div>
+
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useLayoutEffect } = React;
 
-        // --- Icons Component ---
+        // --- Componente de Iconos ---
         const Icon = ({ name, className = "w-5 h-5" }) => {
-            useEffect(() => {
-                lucide.createIcons();
-            }, []);
+            useLayoutEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [name]);
             return <i data-lucide={name} className={className}></i>;
         };
 
-        // --- Components ---
+        // --- Barra de Navegación ---
         const Navbar = ({ activePage, setActivePage }) => {
             const [scrolled, setScrolled] = useState(false);
             const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -120,11 +134,11 @@
                     scrolled ? "glass-nav py-4 shadow-sm border-b border-stone-100" : "bg-transparent py-6"
                 }`}>
                     <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActivePage('home')}>
-                            <div className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center">
+                        <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setActivePage('home')}>
+                            <div className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform">
                                 <Icon name="leaf" className="w-5 h-5 text-emerald-50" />
                             </div>
-                            <span className="text-xl font-serif font-bold tracking-tight text-emerald-950">Nutrición Integral</span>
+                            <span className="text-xl font-serif font-bold tracking-tight text-emerald-950">Andrés Sambrana</span>
                         </div>
 
                         <div className="hidden md:flex items-center gap-10">
@@ -132,40 +146,41 @@
                                 <button
                                     key={link.id}
                                     onClick={() => setActivePage(link.id)}
-                                    className={`text-xs font-bold uppercase tracking-widest transition-colors ${
+                                    className={`text-xs font-bold uppercase tracking-widest transition-all relative group ${
                                         activePage === link.id ? "text-emerald-700" : "text-stone-500 hover:text-emerald-700"
                                     }`}
                                 >
                                     {link.name}
+                                    <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-emerald-700 transition-transform duration-300 ${activePage === link.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
                                 </button>
                             ))}
                             <button 
                                 onClick={() => window.open('https://wa.me/1234567890', '_blank')}
-                                className="bg-emerald-900 text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-emerald-800 transition-all shadow-lg"
+                                className="bg-emerald-900 text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-emerald-800 transition-all shadow-lg hover:shadow-emerald-900/20"
                             >
                                 Reservar Turno
                             </button>
                         </div>
 
-                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-emerald-950">
+                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-emerald-950 p-2">
                             <Icon name={isMenuOpen ? "x" : "menu"} className="w-6 h-6" />
                         </button>
                     </div>
 
                     {isMenuOpen && (
-                        <div className="md:hidden bg-white border-b border-stone-100 px-6 py-8 space-y-6 animate-fade-in">
+                        <div className="md:hidden bg-white border-b border-stone-100 px-6 py-8 space-y-6 animate-fade-in shadow-xl">
                             {navLinks.map((link) => (
                                 <button
                                     key={link.id}
                                     onClick={() => { setActivePage(link.id); setIsMenuOpen(false); }}
-                                    className="block text-2xl font-serif text-stone-800"
+                                    className={`block text-2xl font-serif ${activePage === link.id ? 'text-emerald-700' : 'text-stone-800'}`}
                                 >
                                     {link.name}
                                 </button>
                             ))}
                             <button 
                                 onClick={() => window.open('https://wa.me/1234567890', '_blank')}
-                                className="w-full bg-emerald-900 text-white py-4 rounded-xl font-bold uppercase tracking-widest"
+                                className="w-full bg-emerald-900 text-white py-4 rounded-xl font-bold uppercase tracking-widest shadow-lg"
                             >
                                 Reservar Turno
                             </button>
@@ -181,7 +196,7 @@
                     <div className="col-span-2">
                         <div className="flex items-center gap-2 mb-6">
                             <Icon name="leaf" className="w-6 h-6 text-emerald-500" />
-                            <span className="text-xl font-serif font-bold text-white">Nutrición Integral</span>
+                            <span className="text-xl font-serif font-bold text-white">Andrés Sambrana</span>
                         </div>
                         <p className="max-w-sm text-stone-500 leading-relaxed mb-8">
                             Acompañándote en el camino hacia una vida más plena, saludable y consciente a través de la alimentación basada en ciencia.
@@ -199,35 +214,43 @@
                         <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">Contacto</h4>
                         <ul className="space-y-4 text-sm">
                             <li className="flex items-center gap-3"><Icon name="phone" className="w-4 h-4 text-emerald-500" /> +54 9 11 1234-5678</li>
-                            <li className="flex items-center gap-3"><Icon name="mail" className="w-4 h-4 text-emerald-500" /> hola@nutricionintegral.com</li>
+                            <li className="flex items-center gap-3"><Icon name="mail" className="w-4 h-4 text-emerald-500" /> hola@andressambrana.com</li>
                             <li className="flex items-center gap-3"><Icon name="map-pin" className="w-4 h-4 text-emerald-500" /> Palermo, Buenos Aires</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">Horarios</h4>
+                        <ul className="space-y-4 text-sm">
+                            <li>Lun - Vie: 09:00 - 19:00</li>
+                            <li>Sábados: 10:00 - 14:00</li>
+                            <li className="text-emerald-500 italic">Consultas Online 24/7</li>
                         </ul>
                     </div>
                 </div>
                 <div className="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-stone-900 text-center text-xs tracking-widest uppercase text-stone-600">
-                    © 2026 Nutrición Integral. Lic. María Paz.
+                    © 2026 Andrés Sambrana Nutricionista.
                 </div>
             </footer>
         );
 
-        // --- Pages ---
+        // --- Páginas ---
         const HomePage = ({ onNavigate }) => (
             <div className="animate-fade-in">
                 <section className="relative min-h-screen flex items-center pt-20 overflow-hidden hero-gradient">
                     <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
-                        <div>
+                        <div className="order-2 lg:order-1">
                             <h2 className="text-emerald-800 font-bold uppercase tracking-[0.3em] text-xs mb-6">Bienestar & Salud</h2>
-                            <h1 className="text-6xl md:text-8xl font-serif text-stone-900 leading-[0.95] mb-8">
+                            <h1 className="text-5xl md:text-8xl font-serif text-stone-900 leading-[0.95] mb-8">
                                 Nutre tu <br />
                                 <span className="italic text-emerald-900">esencia.</span>
                             </h1>
-                            <p className="text-xl text-stone-600 mb-12 max-w-md leading-relaxed font-light">
+                            <p className="text-lg md:text-xl text-stone-600 mb-12 max-w-md leading-relaxed font-light">
                                 Descubre un enfoque elegante y científico para transformar tu salud sin renunciar al placer de comer bien.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-6">
                                 <button 
                                     onClick={() => onNavigate('contact')}
-                                    className="bg-emerald-900 text-white px-10 py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-emerald-800 transition-all shadow-xl"
+                                    className="bg-emerald-900 text-white px-10 py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-emerald-800 transition-all shadow-xl hover:shadow-emerald-900/30"
                                 >
                                     Comenzar ahora
                                 </button>
@@ -242,8 +265,8 @@
                                 </button>
                             </div>
                         </div>
-                        <div className="relative">
-                            <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-2xl relative z-10">
+                        <div className="relative order-1 lg:order-2">
+                            <div className="aspect-[4/5] rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-2xl relative z-10">
                                 <img 
                                     src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=1000" 
                                     alt="Health" 
@@ -289,7 +312,7 @@
                             <div className="aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl">
                                 <img 
                                     src="https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&q=80&w=800" 
-                                    alt="Lic. María Paz" 
+                                    alt="Andrés Sambrana" 
                                     className="w-full h-full object-cover"
                                 />
                             </div>
@@ -300,11 +323,21 @@
                         </div>
                         <div>
                             <h2 className="text-emerald-800 font-bold uppercase tracking-[0.3em] text-xs mb-6">Sobre Mí</h2>
-                            <h3 className="text-5xl font-serif text-stone-900 mb-8 leading-tight">Lic. María Paz</h3>
+                            <h3 className="text-5xl font-serif text-stone-900 mb-8 leading-tight">Andrés Sambrana</h3>
                             <div className="space-y-6 text-lg text-stone-600 font-light leading-relaxed">
                                 <p>Mi pasión por la nutrición nació de la convicción de que lo que comemos define no solo nuestra salud física, sino nuestra claridad mental y bienestar emocional.</p>
-                                <p>Como Licenciada en Nutrición, he dedicado mi carrera a desmitificar las dietas de moda y reemplazarlas por hábitos sostenibles, elegantes y placenteros.</p>
+                                <p>Como Licenciado en Nutrición, he dedicado mi carrera a desmitificar las dietas de moda y reemplazarlas por hábitos sostenibles, elegantes y placenteros.</p>
                                 <p>Mi enfoque es holístico: considero tu estilo de vida, tus gustos y tus metas para crear un plan que se sienta como un regalo para ti mismo.</p>
+                            </div>
+                            <div className="mt-12 grid grid-cols-2 gap-8">
+                                <div>
+                                    <h4 className="font-bold text-stone-900 mb-2">Especialidad</h4>
+                                    <p className="text-stone-500 text-sm">Nutrición Clínica & Deportiva</p>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-stone-900 mb-2">Formación</h4>
+                                    <p className="text-stone-500 text-sm">UBA - Postgrado en Nutrición Funcional</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -326,7 +359,7 @@
                             { title: "Pack Bienestar", price: "Desde $12000", desc: "Acompañamiento intensivo de 3 meses para transformación de hábitos." },
                             { title: "Plan Corporativo", price: "Consultar", desc: "Programas de bienestar para equipos de trabajo y empresas." }
                         ].map((service, i) => (
-                            <div key={i} className="group bg-stone-50 p-12 rounded-[3rem] hover:bg-emerald-900 transition-all duration-700">
+                            <div key={i} className="group bg-stone-50 p-12 rounded-[3rem] hover:bg-emerald-900 transition-all duration-700 card-shadow">
                                 <div className="flex justify-between items-start mb-8">
                                     <h4 className="text-3xl font-serif text-stone-900 group-hover:text-white transition-colors">{service.title}</h4>
                                     <span className="text-emerald-700 font-bold group-hover:text-emerald-300 transition-colors">{service.price}</span>
@@ -351,16 +384,21 @@
                     </div>
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
-                            { name: "Julian P.", text: "El enfoque de María cambió mi vida. No solo bajé de peso, sino que recuperé mi energía." },
-                            { name: "Andrea L.", text: "Elegante, profesional y muy humana. Sus recetas son increíbles y fáciles de seguir." },
-                            { name: "Marcos G.", text: "Como deportista, necesitaba precisión. El plan fue la clave para mi último triatlón." }
+                            { name: "Julian P.", text: "El enfoque de Andrés cambió mi vida. No solo bajé de peso, sino que recuperé mi energía por completo." },
+                            { name: "Andrea L.", text: "Elegante, profesional y muy humano. Sus recetas son increíbles y realmente fáciles de seguir." },
+                            { name: "Marcos G.", text: "Como deportista, necesitaba precisión. El plan fue la clave para mi mejor marca en el último triatlón." }
                         ].map((t, i) => (
-                            <div key={i} className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-stone-100">
+                            <div key={i} className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-stone-100 card-shadow">
                                 <div className="flex gap-1 mb-6">
                                     {[...Array(5)].map((_, idx) => <Icon key={idx} name="star" className="w-3 h-3 text-amber-400 fill-amber-400" />)}
                                 </div>
                                 <p className="text-stone-600 italic mb-8 leading-relaxed">"{t.text}"</p>
-                                <p className="font-serif text-stone-900">{t.name}</p>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-900 font-bold">
+                                        {t.name[0]}
+                                    </div>
+                                    <p className="font-serif text-stone-900">{t.name}</p>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -371,13 +409,13 @@
         const ContactPage = () => (
             <div className="animate-fade-in pt-40 pb-32 bg-white">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="bg-stone-950 rounded-[4rem] overflow-hidden grid lg:grid-cols-2">
-                        <div className="p-16 lg:p-24 text-white">
+                    <div className="bg-stone-950 rounded-[4rem] overflow-hidden grid lg:grid-cols-2 shadow-2xl">
+                        <div className="p-12 lg:p-24 text-white">
                             <h2 className="text-emerald-500 font-bold uppercase tracking-[0.3em] text-xs mb-8">Contacto</h2>
                             <h3 className="text-5xl font-serif mb-12">Hablemos de tu futuro.</h3>
                             <div className="space-y-10">
                                 <div className="flex items-center gap-6 group cursor-pointer" onClick={() => window.open('https://wa.me/1234567890', '_blank')}>
-                                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-emerald-500 transition-all">
+                                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-emerald-500 transition-all duration-500">
                                         <Icon name="message-circle" className="w-6 h-6 text-emerald-500 group-hover:text-white" />
                                     </div>
                                     <div>
@@ -385,15 +423,34 @@
                                         <p className="text-xl font-serif">+54 9 11 1234-5678</p>
                                     </div>
                                 </div>
+                                <div className="flex items-center gap-6 group">
+                                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-emerald-500 transition-all duration-500">
+                                        <Icon name="mail" className="w-6 h-6 text-emerald-500 group-hover:text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="text-stone-500 text-xs uppercase tracking-widest mb-1">Email</p>
+                                        <p className="text-xl font-serif">hola@andressambrana.com</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className="bg-stone-900 p-16 lg:p-24">
-                            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
-                                <div className="space-y-2">
-                                    <label className="text-xs uppercase tracking-widest text-stone-500 font-bold">Nombre</label>
-                                    <input type="text" className="w-full bg-transparent border-b border-stone-800 py-4 text-white focus:outline-none focus:border-emerald-500 transition-colors" />
+                        <div className="bg-stone-900 p-12 lg:p-24">
+                            <form className="space-y-8" onSubmit={(e) => { e.preventDefault(); alert('Mensaje enviado (Simulación)'); }}>
+                                <div className="grid md:grid-cols-2 gap-8">
+                                    <div className="space-y-2">
+                                        <label className="text-xs uppercase tracking-widest text-stone-500 font-bold">Nombre</label>
+                                        <input required type="text" className="w-full bg-transparent border-b border-stone-800 py-4 text-white focus:outline-none focus:border-emerald-500 transition-colors" placeholder="Tu nombre" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs uppercase tracking-widest text-stone-500 font-bold">Email</label>
+                                        <input required type="email" className="w-full bg-transparent border-b border-stone-800 py-4 text-white focus:outline-none focus:border-emerald-500 transition-colors" placeholder="tu@email.com" />
+                                    </div>
                                 </div>
-                                <button className="w-full bg-emerald-500 text-stone-950 py-5 rounded-2xl font-bold uppercase tracking-widest hover:bg-emerald-400 transition-all mt-8">
+                                <div className="space-y-2">
+                                    <label className="text-xs uppercase tracking-widest text-stone-500 font-bold">Mensaje</label>
+                                    <textarea required rows="4" className="w-full bg-transparent border-b border-stone-800 py-4 text-white focus:outline-none focus:border-emerald-500 transition-colors resize-none" placeholder="¿En qué puedo ayudarte?"></textarea>
+                                </div>
+                                <button type="submit" className="w-full bg-emerald-500 text-stone-950 py-5 rounded-2xl font-bold uppercase tracking-widest hover:bg-emerald-400 transition-all mt-8 shadow-xl shadow-emerald-500/10 active:scale-95">
                                     Enviar Mensaje
                                 </button>
                             </form>
@@ -403,12 +460,23 @@
             </div>
         );
 
-        // --- Main App ---
+        // --- Aplicación Principal ---
         function App() {
             const [activePage, setActivePage] = useState('home');
+            const [isReady, setIsReady] = useState(false);
 
             useEffect(() => {
-                window.scrollTo(0, 0);
+                // Ocultar pantalla de carga una vez que React esté listo
+                const loader = document.getElementById('loading-screen');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 500);
+                }
+                setIsReady(true);
+            }, []);
+
+            useEffect(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }, [activePage]);
 
             const renderPage = () => {
@@ -423,24 +491,37 @@
             };
 
             return (
-                <div className="min-h-screen">
+                <div className={`min-h-screen transition-opacity duration-700 ${isReady ? 'opacity-100' : 'opacity-0'}`}>
                     <Navbar activePage={activePage} setActivePage={setActivePage} />
                     <main>
                         {renderPage()}
                     </main>
                     <Footer />
+                    
+                    {/* Botón Flotante de WhatsApp */}
                     <button 
                         onClick={() => window.open('https://wa.me/1234567890', '_blank')}
-                        className="fixed bottom-10 right-10 z-50 w-16 h-16 bg-emerald-500 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-all"
+                        className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-50 w-14 h-14 md:w-16 md:h-16 bg-emerald-500 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-all active:scale-95 hover:shadow-emerald-500/40"
                     >
-                        <Icon name="message-circle" className="w-8 h-8" />
+                        <Icon name="message-circle" className="w-7 h-7 md:w-8 md:h-8" />
                     </button>
                 </div>
             );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        // Renderizado con manejo de errores
+        try {
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<App />);
+        } catch (err) {
+            console.error("Error al renderizar:", err);
+            document.getElementById('loading-screen').innerHTML = `
+                <div class="p-10 text-center">
+                    <p class="text-red-600 font-bold mb-4">Error al cargar la aplicación.</p>
+                    <p class="text-stone-500 text-sm">Por favor, intenta recargar la página.</p>
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>
